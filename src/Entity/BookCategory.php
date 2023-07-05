@@ -41,6 +41,13 @@ class BookCategory
         return $this->slug;
     }
 
+    public function setId(?int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     public function setSlug(?string $slug): self
     {
         $this->slug = $slug;
