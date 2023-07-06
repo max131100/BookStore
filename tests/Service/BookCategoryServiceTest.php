@@ -19,8 +19,7 @@ class BookCategoryServiceTest extends AbstractTestCase
         $this->setEntityId($category, 1);
         $repository = $this->createMock(BookCategoryRepository::class);
         $repository->expects($this->once())
-            ->method('findBy')
-            ->with([], ['title' => Criteria::ASC])
+            ->method('findAllSortedByTitle')
             ->willReturn([$category]);
 
         $service = new BookCategoryService($repository);

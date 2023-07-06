@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Repository\BookRepository;
+use App\Repository\BookCategoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BookCategoryRepository::class)]
