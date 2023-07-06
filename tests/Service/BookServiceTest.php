@@ -2,6 +2,7 @@
 
 namespace Service;
 
+use App\Tests\AbstractTestCase;
 use App\Entity\Book;
 use App\Entity\BookCategory;
 use App\Exception\BookCategoryNotFoundException;
@@ -12,9 +13,8 @@ use App\Repository\BookRepository;
 use App\Service\BookService;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use PHPUnit\Framework\TestCase;
 
-class BookServiceTest extends TestCase
+class BookServiceTest extends AbstractTestCase
 {
 
     public function testGetBooksByCategoryNotFound(): void
@@ -55,8 +55,7 @@ class BookServiceTest extends TestCase
 
     public function createBookEntity(): Book
     {
-        return (new Book())
-            ->setId(123)
+        $book = (new Book())
             ->setTitle('Test book')
             ->setSlug('test book')
             ->setMeap(false)
@@ -64,6 +63,10 @@ class BookServiceTest extends TestCase
             ->setCategories(new ArrayCollection())
             ->setPublicationDate(new DateTime('2020-10-10'))
             ->setImage('test image');
+
+        $this->setEntityId($book, 123);
+
+        return $book;
     }
 
     private function createItemModel(): BookListItem
