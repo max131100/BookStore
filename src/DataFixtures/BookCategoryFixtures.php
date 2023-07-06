@@ -15,7 +15,7 @@ class BookCategoryFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $categories = [
-            self::DEVICES_CATEGORY => (new BookCategory())->setTitle('Data')->setSlug('data'),
+            self::DEVICES_CATEGORY => (new BookCategory())->setTitle('Devices')->setSlug('devices'),
             self::ANDROID_CATEGORY => (new BookCategory())->setTitle('Android')->setSlug('android')
         ];
 
