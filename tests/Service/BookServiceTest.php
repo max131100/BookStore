@@ -23,9 +23,9 @@ class BookServiceTest extends AbstractTestCase
 
         $bookCategoryRepository = $this->createMock(BookCategoryRepository::class);
         $bookCategoryRepository->expects($this->once())
-            ->method('find')
+            ->method('existsById')
             ->with(130)
-            ->willReturn(null);
+            ->willReturn(false);
 
         $this->expectException(BookCategoryNotFoundException::class);
 
@@ -42,9 +42,9 @@ class BookServiceTest extends AbstractTestCase
 
         $bookCategoryRepository = $this->createMock(BookCategoryRepository::class);
         $bookCategoryRepository->expects($this->once())
-            ->method('find')
+            ->method('existsById')
             ->with(130)
-            ->willReturn(new BookCategory());
+            ->willReturn(true);
 
         $service = new BookService($bookRepository, $bookCategoryRepository);
 
