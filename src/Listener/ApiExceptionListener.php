@@ -2,6 +2,7 @@
 
 namespace App\Listener;
 
+use App\Model\ErrorDebugDetails;
 use App\Model\ErrorResponse;
 use App\Service\ExceptionHandler\ExceptionMapping;
 use App\Service\ExceptionHandler\ExceptionMappingResolver;
@@ -37,7 +38,8 @@ class ApiExceptionListener
         }
 
         $message = $mapping->isHidden() ? Response::$statusTexts[$mapping->getCode()] : $throwable->getMessage();
-        $data = $this->serializer->serialize(new ErrorResponse($message), JsonEncoder::FORMAT);
+        $details = new ErrorDebugDetails($throwable->getTraceAsString());
+        $data = $this->serializer->serialize(new ErrorResponse($message, $details), JsonEncoder::FORMAT);
         $response = new JsonResponse($data, $mapping->getCode(), [], true);
 
         $event->setResponse($response);
