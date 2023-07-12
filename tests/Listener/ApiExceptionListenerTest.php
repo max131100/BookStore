@@ -3,6 +3,7 @@
 namespace App\Tests\Listener;
 
 use App\Listener\ApiExceptionListener;
+use App\Model\ErrorDebugDetails;
 use App\Model\ErrorResponse;
 use App\Service\ExceptionHandler\ExceptionMapping;
 use App\Service\ExceptionHandler\ExceptionMappingResolver;
@@ -38,7 +39,7 @@ class ApiExceptionListenerTest extends AbstractTestCase
     {
         $mapping = ExceptionMapping::fromCode(Response::HTTP_NOT_FOUND);
         $responseMessage = Response::$statusTexts[$mapping->getCode()];
-        $responseBody = json_encode(['error' => $responseMessage]);
+        $responseBody = json_encode(['error' => $responseMessage, 'trace' => 'something']);
 
         $this->resolver->expects($this->once())
             ->method('resolve')
@@ -47,10 +48,17 @@ class ApiExceptionListenerTest extends AbstractTestCase
 
         $this->serializer->expects($this->once())
             ->method('serialize')
-            ->with(new ErrorResponse($responseMessage), JsonEncoder::FORMAT)
+            ->with(
+                $this->callback(function (ErrorResponse $response) use ($responseMessage) {
+                    return $response->getMessage() == $responseMessage &&
+                        $response->getDetails() instanceof ErrorDebugDetails &&
+                        !empty($response->getDetails()->getTrace());
+                }),
+                JsonEncoder::FORMAT
+            )
             ->willReturn($responseBody);
 
-        $event = $this->createEvent(new InvalidArgumentException('test'));
+        $event = $this->createExceptionEvent(new InvalidArgumentException('test'));
 
         $this->runListener($event);
 
@@ -61,7 +69,7 @@ class ApiExceptionListenerTest extends AbstractTestCase
     {
         $mapping = new ExceptionMapping(Response::HTTP_NOT_FOUND, false, false);
         $responseMessage = 'test';
-        $responseBody = json_encode(['error' => $responseMessage]);
+        $responseBody = json_encode(['error' => $responseMessage, 'trace' => 'something']);
 
         $this->resolver->expects($this->once())
             ->method('resolve')
@@ -70,10 +78,17 @@ class ApiExceptionListenerTest extends AbstractTestCase
 
         $this->serializer->expects($this->once())
             ->method('serialize')
-            ->with(new ErrorResponse($responseMessage), JsonEncoder::FORMAT)
+            ->with(
+                $this->callback(function (ErrorResponse $response) use ($responseMessage) {
+                    return $response->getMessage() == $responseMessage &&
+                        $response->getDetails() instanceof ErrorDebugDetails &&
+                        !empty($response->getDetails()->getTrace());
+                }),
+                JsonEncoder::FORMAT
+            )
             ->willReturn($responseBody);
 
-        $event = $this->createEvent(new InvalidArgumentException('test'));
+        $event = $this->createExceptionEvent(new InvalidArgumentException('test'));
 
         $this->runListener($event);
 
@@ -84,7 +99,7 @@ class ApiExceptionListenerTest extends AbstractTestCase
     {
         $mapping = new ExceptionMapping(Response::HTTP_NOT_FOUND, false, true);
         $responseMessage = 'test';
-        $responseBody = json_encode(['error' => $responseMessage]);
+        $responseBody = json_encode(['error' => $responseMessage, 'trace' => 'something']);
 
         $this->resolver->expects($this->once())
             ->method('resolve')
@@ -93,13 +108,20 @@ class ApiExceptionListenerTest extends AbstractTestCase
 
         $this->serializer->expects($this->once())
             ->method('serialize')
-            ->with(new ErrorResponse($responseMessage), JsonEncoder::FORMAT)
+            ->with(
+                $this->callback(function (ErrorResponse $response) use ($responseMessage) {
+                    return $response->getMessage() == $responseMessage &&
+                        $response->getDetails() instanceof ErrorDebugDetails &&
+                        !empty($response->getDetails()->getTrace());
+                }),
+                JsonEncoder::FORMAT
+            )
             ->willReturn($responseBody);
 
         $this->logger->expects($this->once())
             ->method('error');
 
-        $event = $this->createEvent(new InvalidArgumentException('test'));
+        $event = $this->createExceptionEvent(new InvalidArgumentException('test'));
 
         $this->runListener($event);
 
@@ -110,7 +132,7 @@ class ApiExceptionListenerTest extends AbstractTestCase
     {
         $mapping = ExceptionMapping::fromCode(Response::HTTP_GATEWAY_TIMEOUT);
         $responseMessage = Response::$statusTexts[$mapping->getCode()];
-        $responseBody = json_encode(['error' => $responseMessage]);
+        $responseBody = json_encode(['error' => $responseMessage, 'trace' => 'something']);
 
         $this->resolver->expects($this->once())
             ->method('resolve')
@@ -119,14 +141,21 @@ class ApiExceptionListenerTest extends AbstractTestCase
 
         $this->serializer->expects($this->once())
             ->method('serialize')
-            ->with(new ErrorResponse($responseMessage), JsonEncoder::FORMAT)
+            ->with(
+                $this->callback(function (ErrorResponse $response) use ($responseMessage) {
+                    return $response->getMessage() == $responseMessage &&
+                        $response->getDetails() instanceof ErrorDebugDetails &&
+                        !empty($response->getDetails()->getTrace());
+                }),
+                JsonEncoder::FORMAT
+            )
             ->willReturn($responseBody);
 
         $this->logger->expects($this->once())
             ->method('error')
             ->with('error message', $this->anything());
 
-        $event = $this->createEvent(new InvalidArgumentException('error message'));
+        $event = $this->createExceptionEvent(new InvalidArgumentException('error message'));
 
         $this->runListener($event);
 
@@ -136,7 +165,7 @@ class ApiExceptionListenerTest extends AbstractTestCase
     public function test500IsDefaultWhenMappingNotFound(): void
     {
         $responseMessage = Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR];
-        $responseBody = json_encode(['error' => $responseMessage]);
+        $responseBody = json_encode(['error' => $responseMessage, 'trace' => 'something']);
 
         $this->resolver->expects($this->once())
             ->method('resolve')
@@ -145,50 +174,29 @@ class ApiExceptionListenerTest extends AbstractTestCase
 
         $this->serializer->expects($this->once())
             ->method('serialize')
-            ->with(new ErrorResponse($responseMessage), JsonEncoder::FORMAT)
+            ->with(
+                $this->callback(function (ErrorResponse $response) use ($responseMessage) {
+                    return $response->getMessage() == $responseMessage &&
+                        $response->getDetails() instanceof ErrorDebugDetails &&
+                        !empty($response->getDetails()->getTrace());
+                }),
+                JsonEncoder::FORMAT
+            )
             ->willReturn($responseBody);
 
         $this->logger->expects($this->once())
             ->method('error')
             ->with('error message', $this->anything());
 
-        $event = $this->createEvent(new InvalidArgumentException('error message'));
+        $event = $this->createExceptionEvent(new InvalidArgumentException('error message'));
 
         $this->runListener($event);
 
         $this->assertResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $responseBody, $event->getResponse());
     }
 
-    private function assertResponse(int $expectedStatusCode, string $expectedBody, Response $actualResponse): void
-    {
-        $this->assertEquals($expectedStatusCode, $actualResponse->getStatusCode());
-        $this->assertInstanceOf(JsonResponse::class, $actualResponse);
-        $this->assertJsonStringEqualsJsonString($expectedBody, $actualResponse->getContent());
-    }
-
     private function runListener(ExceptionEvent $event): void
     {
         (new ApiExceptionListener($this->resolver, $this->logger, $this->serializer))($event);
-    }
-
-    private function createEvent(InvalidArgumentException $exception): ExceptionEvent
-    {
-        return new ExceptionEvent(
-            $this->createTestKernel(),
-            new Request(),
-            HttpKernelInterface::MAIN_REQUEST,
-            $exception
-        );
-    }
-
-    private function createTestKernel(): HttpKernelInterface
-    {
-        return new class() implements HttpKernelInterface
-        {
-            public function handle(Request $request, int $type = self::MAIN_REQUEST, bool $catch = true): Response
-            {
-                return new Response('test');
-            }
-        };
     }
 }
