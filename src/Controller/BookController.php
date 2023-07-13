@@ -12,6 +12,7 @@ use App\Model\BookListResponse;
 use OpenApi\Annotations as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use App\Model\ErrorResponse;
+use App\Model\BookDetails;
 
 class BookController extends AbstractController
 {
@@ -23,7 +24,7 @@ class BookController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Returns books that belongs to chosen category",
-     *     @Model(type=BookListResponse::class)
+     *     @Model(type=BookDetails::class)
      * )
      * @OA\Response(
      *     response=404,
@@ -35,5 +36,23 @@ class BookController extends AbstractController
     public function booksByCategory(int $id): Response
     {
         return $this->json($this->service->getBooksByCategory($id));
+    }
+
+    /**
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns book detail info",
+     *     @Model(type=BookListResponse::class)
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Book not found",
+     *     @Model(type=ErrorResponse::class)
+     * )
+     */
+    #[Route(path: 'api/v1/book/{id}', methods: ['GET'])]
+    public function booksById(int $id): Response
+    {
+        return $this->json($this->service->getBookById($id));
     }
 }

@@ -58,7 +58,9 @@ class BookControllerTest extends AbstractControllerTest
         ->setPublicationDate(new DateTime())
         ->setAuthors(['author'])
         ->setMeap(false)
-        ->setCategories(new ArrayCollection([$bookCategory])));
+        ->setCategories(new ArrayCollection([$bookCategory]))
+        ->setIsbn('123321')
+        ->setDescription('Test description'));
 
         $this->em->flush();
 

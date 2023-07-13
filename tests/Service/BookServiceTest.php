@@ -2,6 +2,7 @@
 
 namespace Service;
 
+use App\Repository\ReviewRepository;
 use App\Tests\AbstractTestCase;
 use App\Entity\Book;
 use App\Entity\BookCategory;
@@ -19,6 +20,7 @@ class BookServiceTest extends AbstractTestCase
 
     public function testGetBooksByCategoryNotFound(): void
     {
+        $reviewRepository = $this->createMock(ReviewRepository::class);
         $bookRepository = $this->createMock(BookRepository::class);
 
         $bookCategoryRepository = $this->createMock(BookCategoryRepository::class);
@@ -29,11 +31,12 @@ class BookServiceTest extends AbstractTestCase
 
         $this->expectException(BookCategoryNotFoundException::class);
 
-        (new BookService($bookRepository, $bookCategoryRepository))->getBooksByCategory(130);
+        (new BookService($bookRepository, $bookCategoryRepository, $reviewRepository))->getBooksByCategory(130);
     }
 
     public function testGetBooksByCategory(): void
     {
+        $reviewRepository = $this->createMock(ReviewRepository::class);
         $bookRepository = $this->createMock(BookRepository::class);
         $bookRepository->expects($this->once())
             ->method('findBooksByCategoryId')
@@ -46,7 +49,7 @@ class BookServiceTest extends AbstractTestCase
             ->with(130)
             ->willReturn(true);
 
-        $service = new BookService($bookRepository, $bookCategoryRepository);
+        $service = new BookService($bookRepository, $bookCategoryRepository, $reviewRepository);
 
         $expected = new BookListResponse([$this->createItemModel()]);
 
@@ -59,6 +62,8 @@ class BookServiceTest extends AbstractTestCase
             ->setTitle('Test book')
             ->setSlug('test book')
             ->setMeap(false)
+            ->setIsbn('123321')
+            ->setDescription('Test description')
             ->setAuthors(['Tester'])
             ->setCategories(new ArrayCollection())
             ->setPublicationDate(new DateTime('2020-10-10'))

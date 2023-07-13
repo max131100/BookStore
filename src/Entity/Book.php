@@ -28,6 +28,12 @@ class Book
     #[ORM\Column(type: 'simple_array')]
     private array $authors;
 
+    #[ORM\Column(length: 13)]
+    private ?string $isbn;
+
+    #[ORM\Column(type: 'text')]
+    private ?string $description;
+
     #[ORM\Column(type: 'date')]
     private DateTimeInterface $publicationDate;
 
@@ -35,11 +41,21 @@ class Book
     private bool $meap;
 
     #[ORM\ManyToMany(targetEntity: BookCategory::class)]
+    #[ORM\JoinTable(name: 'book_to_book_category')]
     private Collection $categories;
+
+    #[ORM\OneToMany(mappedBy: 'book', targetEntity: BookToBookFormat::class, orphanRemoval: true)]
+    #[ORM\JoinTable(name: 'book_to_book_format')]
+    private Collection $formats;
+
+    #[ORM\OneToMany(mappedBy: 'book', targetEntity: Review::class)]
+    private Collection $reviews;
 
     public function __construct()
     {
         $this->categories = new ArrayCollection();
+        $this->formats = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -120,6 +136,7 @@ class Book
         return $this;
     }
 
+    /** @return Collection<BookCategory> */
     public function getCategories(): Collection
     {
         return $this->categories;
@@ -130,5 +147,75 @@ class Book
         $this->categories = $categories;
 
         return $this;
+    }
+
+    public function getIsbn(): ?string
+    {
+        return $this->isbn;
+    }
+
+    public function setIsbn(?string $isbn): self
+    {
+        $this->isbn = $isbn;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BookToBookFormat>
+     */
+    public function getFormats(): Collection
+    {
+        return $this->formats;
+    }
+
+    public function addFormat(BookToBookFormat $format): self
+    {
+        if (!$this->formats->contains($format)) {
+            $this->formats->add($format);
+            $format->setBook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFormat(BookToBookFormat $format): self
+    {
+        if ($this->formats->removeElement($format)) {
+            // set the owning side to null (unless already changed)
+            if ($format->getBook() === $this) {
+                $format->setBook(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
+    }
+
+    /**
+     * @param Collection $reviews
+     */
+    public function setReviews(Collection $reviews): void
+    {
+        $this->reviews = $reviews;
     }
 }
