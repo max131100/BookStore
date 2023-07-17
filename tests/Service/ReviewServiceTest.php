@@ -82,7 +82,7 @@ class ReviewServiceTest extends AbstractTestCase
         $this->reviewRepository->expects($this->once())
             ->method('getPageByBookId')
             ->with(self::BOOK_ID, 0, self::PER_PAGE)
-            ->willReturn(new ArrayIterator($entity));
+            ->willReturn(new ArrayIterator([$entity]));
 
         $service = new ReviewService($this->reviewRepository, $this->ratingService);
         $expected = (new ReviewPage())

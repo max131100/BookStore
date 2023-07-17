@@ -100,7 +100,7 @@ class BookServiceTest extends AbstractTestCase
             ->setSlug('test book')
             ->setMeap(false)
             ->setAuthors(['Tester'])
-            ->setPublicationDate(1602277200)
+            ->setPublicationDate(1602288000)
             ->setImage('test image');
     }
 }
