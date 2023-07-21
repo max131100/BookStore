@@ -80,6 +80,4 @@ class ReviewControllerTest extends AbstractControllerTest
         ->setCreatedAt(new DateTimeImmutable())
         ->setBook($book));
     }
-
-
 }
