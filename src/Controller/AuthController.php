@@ -23,7 +23,10 @@ class AuthController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Signs up a user",
-     *     @Model(type=IdResponse::class)
+     *     @OA\JsonContent(
+     *          @OA\Property(property="token", type="string"),
+     *          @OA\Property(property="refresh_token", type="string")
+     *     )
      * )
      * @OA\Response(
      *     response=409,
@@ -40,6 +43,6 @@ class AuthController extends AbstractController
     #[Route(path: '/api/v1/signUp', methods: ['POST'])]
     public function signUp(#[RequestBody] SignUpRequest $signUpRequest): Response
     {
-        return $this->json($this->signUpService->signUp($signUpRequest));
+        return $this->signUpService->signUp($signUpRequest);
     }
 }
