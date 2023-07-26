@@ -55,6 +55,6 @@ class ApiExceptionListener
 
     private function isSecurityException(Throwable $throwable): bool
     {
-        return $throwable instanceof AuthenticationException || $throwable instanceof AccessDeniedException;
+        return $throwable instanceof AuthenticationException;
     }
 }
