@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: BookRepository::class)]
 class Book
@@ -22,23 +23,27 @@ class Book
     #[ORM\Column(length: 255)]
     private ?string $slug;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $image;
 
-    #[ORM\Column(type: 'simple_array')]
+    #[ORM\Column(type: 'simple_array', nullable: true)]
     private array $authors;
 
-    #[ORM\Column(length: 13)]
+    #[ORM\Column(length: 13, nullable: true)]
     private ?string $isbn;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description;
 
-    #[ORM\Column(type: 'date')]
-    private DateTimeInterface $publicationDate;
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?DateTimeInterface $publicationDate;
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $meap;
+
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    private UserInterface $user;
 
     #[ORM\ManyToMany(targetEntity: BookCategory::class)]
     #[ORM\JoinTable(name: 'book_to_book_category')]
@@ -63,8 +68,7 @@ class Book
         return $this->id;
     }
 
-
-    public function getTitle(): ?string
+     public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -112,12 +116,12 @@ class Book
         return $this;
     }
 
-    public function getPublicationDate(): DateTimeInterface
+    public function getPublicationDate(): ?DateTimeInterface
     {
         return $this->publicationDate;
     }
 
-    public function setPublicationDate(DateTimeInterface $publicationDate): self
+    public function setPublicationDate(?DateTimeInterface $publicationDate): self
     {
         $this->publicationDate = $publicationDate;
 
@@ -217,5 +221,17 @@ class Book
     public function setReviews(Collection $reviews): void
     {
         $this->reviews = $reviews;
+    }
+
+    public function getUser(): UserInterface
+    {
+        return $this->user;
+    }
+
+    public function setUser(UserInterface $user): self
+    {
+        $this->user = $user;
+
+        return $this;
     }
 }

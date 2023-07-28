@@ -27,7 +27,8 @@ class BookFixtures extends Fixture implements DependentFixtureInterface
             ->setPublicationDate(new DateTimeImmutable('2019-04-01'))
             ->setAuthors(['Timo Tuominen'])
             ->setCategories(new ArrayCollection([$androidCategory, $devicesCategory]))
-            ->setImage('https://images.manning.com/360/480/resize/book/b/b…239-4bf5-bbf2-886be8936951/Tuominen-RxJava-HI.png');
+            ->setImage('https://images.manning.com/360/480/resize/book/b/b…239-4bf5-bbf2-886be8936951/Tuominen-RxJava-HI.png')
+            ->setUser();
 
         $manager->persist($book);
         $manager->flush();
