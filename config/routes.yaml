@@ -9,3 +9,9 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+index:
+    path: /{wildcard}
+    controller: App\Controller\BaseController::index
+    requirements:
+        wildcard: .*
