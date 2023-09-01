@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller;
 
-use App\Controller\AuthController;
 use App\Tests\AbstractControllerTest;
 
 class AuthControllerTest extends AbstractControllerTest

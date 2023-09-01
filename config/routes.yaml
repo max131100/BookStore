@@ -6,11 +6,12 @@ api_refresh_token:
 
 controllers:
     resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+        path: ../src/Controller/Api
+        namespace: App\Controller\Api
     type: attribute
+    requirements:
 
-index:
+vue_routes:
     path: /{wildcard}
     controller: App\Controller\BaseController::index
     requirements:

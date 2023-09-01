@@ -1,18 +1,16 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
-use App\Exception\BookCategoryNotFoundException;
+use App\Model\BookDetails;
+use App\Model\BookListResponse;
+use App\Model\ErrorResponse;
 use App\Service\BookService;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Model\BookListResponse;
-use OpenApi\Annotations as OA;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use App\Model\ErrorResponse;
-use App\Model\BookDetails;
 
 class BookController extends AbstractController
 {

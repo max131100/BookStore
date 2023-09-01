@@ -2,9 +2,7 @@
 
 namespace App\Tests\Controller;
 
-use App\Controller\AdminController;
 use App\Tests\AbstractControllerTest;
-use PHPUnit\Framework\TestCase;
 
 class AdminControllerTest extends AbstractControllerTest
 {

@@ -1,18 +1,15 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
+use App\Model\ReviewPage;
 use App\Service\ReviewService;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Model\BookListResponse;
-use OpenApi\Annotations as OA;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use App\Model\ErrorResponse;
-use App\Model\ReviewPage;
 
 class ReviewController extends AbstractController
 {

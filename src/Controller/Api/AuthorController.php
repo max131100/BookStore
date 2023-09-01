@@ -1,10 +1,15 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\Attribute\RequestBody;
 use App\Attribute\RequestFile;
+use App\Model\Author\BookListResponse;
 use App\Model\Author\CreateBookRequest;
+use App\Model\Author\PublishBookRequest;
+use App\Model\Author\UploadCoverResponse;
+use App\Model\ErrorResponse;
+use App\Model\IdResponse;
 use App\Service\AuthorService;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
@@ -12,13 +17,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Model\Author\BookListResponse;
-use App\Model\ErrorResponse;
-use App\Model\IdResponse;
-use App\Model\Author\PublishBookRequest;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\NotNull;
-use App\Model\Author\UploadCoverResponse;
 
 class AuthorController extends AbstractController
 {

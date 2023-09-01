@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller;
 
-use App\Controller\RecommendationController;
 use App\Entity\Book;
 use App\Tests\AbstractControllerTest;
 use DateTime;
