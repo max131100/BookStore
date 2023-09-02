@@ -11,7 +11,7 @@
                   <img src="./../../../public/upload/assets/book-store-logo.jpg" alt="logo" height="120"/>
               </router-link>
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-6">
                   <input class="form-control" type="text" placeholder="search for book...">
                 </div>
                 <div class="col-md-1">
@@ -22,6 +22,11 @@
                 <div class="col-md-1">
                   <router-link :to="{name: 'cart'}">
                     cart
+                  </router-link>
+                </div>
+                <div class="col-md-1">
+                  <router-link :to="{name: 'signUp'}">
+                    sign up
                   </router-link>
                 </div>
             </div>

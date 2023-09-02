@@ -10,7 +10,8 @@
           <label for="password">Password:</label>
           <input v-model="password" type="password" class="form-control input-width" id="password" placeholder="Enter password">
         </div>
-        <button @click.prevent="login" type="submit" class="btn btn-primary">Sign in</button>
+        <button @click.prevent="login" type="submit" class="btn btn-primary mb-3">Sign in</button>
+        <div v-if="error" class="text-danger">Invalid username or password</div>
       </form>
     </div>
   </div>
@@ -18,15 +19,15 @@
 
 <script>
   import axios from "axios";
-  import router from "../router";
 
   export default {
     name: 'SignIn',
 
     data() {
       return {
-        username: null,
-        password: null
+        username: '',
+        password: '',
+        error: null
       }
     },
 
@@ -38,6 +39,15 @@
               localStorage.setItem('refresh_token', response.data.refresh_token);
 
               this.$router.push({name: 'cart'});
+            })
+            .catch(error => {
+              this.error = error;
+              //const passwordInput = document.getElementById('password');
+             // if (passwordInput) {
+               // passwordInput.value = '';
+                //this.password = '';
+              //}
+              this.password = '';
             })
       }
     }
