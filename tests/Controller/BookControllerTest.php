@@ -7,6 +7,7 @@ use App\Entity\BookCategory;
 use App\Entity\BookFormat;
 use App\Entity\BookToBookFormat;
 use App\Tests\AbstractControllerTest;
+use App\Tests\MockUtils;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -14,8 +15,21 @@ class BookControllerTest extends AbstractControllerTest
 {
     public function testBooksByCategory()
     {
-        $categoryId = $this->createCategory();
-        $this->client->request('GET', 'api/v1/category/' . $categoryId . '/books');
+        $user = MockUtils::createUser();
+        $this->em->persist($user);
+
+        $bookCategory = MockUtils::createBookCategory();
+        $this->em->persist($bookCategory);
+
+        $book = MockUtils::createBook()
+            ->setCategories(new ArrayCollection([$bookCategory]))
+            ->setUser($user);
+
+        $this->em->persist($book);
+
+        $this->em->flush();
+
+        $this->client->request('GET', 'api/v1/category/' . $bookCategory->getId() . '/books');
 
         $responseContent = $this->client->getResponse()->getContent();
 
@@ -50,9 +64,25 @@ class BookControllerTest extends AbstractControllerTest
 
     public function testBookById(): void
     {
-        $bookId = $this->createBook();
+        $user = MockUtils::createUser();
+        $this->em->persist($user);
 
-        $this->client->request('GET', 'api/v1/book/' . $bookId);
+        $bookCategory = MockUtils::createBookCategory();
+        $this->em->persist($bookCategory);
+
+        $format = MockUtils::createBookFormat();
+        $this->em->persist($format);
+
+        $book = MockUtils::createBook()
+            ->setCategories(new ArrayCollection([$bookCategory]))
+            ->setUser($user);
+
+        $this->em->persist($book);
+        $this->em->persist(MockUtils::createBookFormatLink($book, $format));
+
+        $this->em->flush();
+
+        $this->client->request('GET', 'api/v1/book/' . $book->getId());
 
         $responseContent = $this->client->getResponse()->getContent();
 
@@ -103,60 +133,5 @@ class BookControllerTest extends AbstractControllerTest
                 ]
             ],
         ]);
-    }
-
-    private function createCategory(): int
-    {
-        $bookCategory = (new BookCategory())->setTitle('Devices')->setSlug('devices');
-        $this->em->persist($bookCategory);
-
-        $this->em->persist((new Book())
-        ->setTitle('Test book')
-        ->setSlug('test-book')
-        ->setImage('http://test-book.png')
-        ->setPublicationDate(new DateTime())
-        ->setAuthors(['author'])
-        ->setMeap(false)
-        ->setCategories(new ArrayCollection([$bookCategory]))
-        ->setIsbn('123321')
-        ->setDescription('Test description'));
-
-        $this->em->flush();
-
-        return $bookCategory->getId();
-    }
-
-    private function createBook(): int
-    {
-        $bookCategory = (new BookCategory())->setTitle('Devices')->setSlug('devices');
-        $this->em->persist($bookCategory);
-
-        $format = (new BookFormat())->setTitle('format')->setDescription('description-format')
-            ->setComment(null);
-
-        $this->em->persist($format);
-
-        $book = (new Book())
-            ->setTitle('Test book')
-            ->setSlug('test-book')
-            ->setImage('http://test-book.png')
-            ->setPublicationDate(new DateTime())
-            ->setAuthors(['author'])
-            ->setMeap(false)
-            ->setCategories(new ArrayCollection([$bookCategory]))
-            ->setIsbn('123321')
-            ->setDescription('Test description');
-
-        $this->em->persist($book);
-
-        $join = (new BookToBookFormat())->setPrice(123.55)
-            ->setFormat($format)
-            ->setBook($book)
-            ->setDiscountPercent(5);
-
-        $this->em->persist($join);
-        $this->em->flush();
-
-        return $book->getId();
     }
 }

@@ -2,18 +2,19 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\Book;
 use App\Tests\AbstractControllerTest;
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Tests\MockUtils;
 
 class RecommendationControllerTest extends AbstractControllerTest
 {
 
     public function testRecommendationsByBookId()
     {
-        $bookId = $this->createBook();
+        $user = MockUtils::createUser();
+        $this->em->persist($user);
 
+        $book = MockUtils::createBook()->setUser($user);
+        $this->em->persist($book);
         $this->em->flush();
 
         $this->client->request('GET', 'api/v1/book/123/recommendations');
@@ -41,24 +42,5 @@ class RecommendationControllerTest extends AbstractControllerTest
                 ]
             ]
         ]);
-    }
-
-    private function createBook(): int
-    {
-        $book = (new Book())
-            ->setTitle('Test book')
-            ->setSlug('test-book')
-            ->setImage('http://test-book.png')
-            ->setPublicationDate(new DateTime())
-            ->setAuthors(['Tester'])
-            ->setMeap(false)
-            ->setCategories(new ArrayCollection([]))
-            ->setIsbn('123321')
-            ->setDescription('Test description');
-
-        $this->em->persist($book);
-        $this->em->flush();
-
-        return $book->getId();
     }
 }

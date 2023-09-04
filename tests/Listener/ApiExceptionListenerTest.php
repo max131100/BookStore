@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -193,6 +194,15 @@ class ApiExceptionListenerTest extends AbstractTestCase
         $this->runListener($event);
 
         $this->assertResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $responseBody, $event->getResponse());
+    }
+
+    public function testIgnoreSecurityException(): void
+    {
+        $this->resolver->expects($this->never())
+            ->method('resolve');
+
+        $event = $this->createExceptionEvent(new AuthenticationException());
+        $this->runListener($event);
     }
 
     private function runListener(ExceptionEvent $event): void

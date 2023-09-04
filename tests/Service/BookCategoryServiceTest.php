@@ -9,6 +9,8 @@ use App\Model\BookCategoryListResponse;
 use App\Repository\BookCategoryRepository;
 use App\Service\BookCategoryService;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class BookCategoryServiceTest extends AbstractTestCase
 {
@@ -22,7 +24,10 @@ class BookCategoryServiceTest extends AbstractTestCase
             ->method('findAllSortedByTitle')
             ->willReturn([$category]);
 
-        $service = new BookCategoryService($repository);
+        $slugger = $this->createMock(SluggerInterface::class);
+        $em = $this->createMock(EntityManagerInterface::class);
+
+        $service = new BookCategoryService($em, $slugger, $repository);
 
         $expected = new BookCategoryListResponse([new BookCategoryModel(1, 'Test', 'test')]);
 
