@@ -185,6 +185,13 @@ class Book
         return $this->formats;
     }
 
+    public function setFormats(Collection $formats): self
+    {
+        $this->formats = $formats;
+
+        return $this;
+    }
+
     public function addFormat(BookToBookFormat $format): self
     {
         if (!$this->formats->contains($format)) {

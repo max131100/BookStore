@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Book;
+use App\Entity\BookToBookFormat;
 use App\Exception\BookNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -31,6 +32,16 @@ class BookRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function saveBookFormatReference(BookToBookFormat $bookToBookFormat): void
+    {
+        $this->_em->persist($bookToBookFormat);
+    }
+
+    public function removeBookFormatReference(BookToBookFormat $bookToBookFormat): void
+    {
+        $this->_em->remove($bookToBookFormat);
     }
 
     /**

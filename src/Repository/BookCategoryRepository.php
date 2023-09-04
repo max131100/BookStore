@@ -67,4 +67,12 @@ class BookCategoryRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['slug' => $slug]) !== null;
     }
+
+    /**
+     * @return BookCategory[]
+     */
+    public function findBookCategoriesByIds(array $ids): array
+    {
+        return $this->findBy(['id' => $ids]);
+    }
 }
