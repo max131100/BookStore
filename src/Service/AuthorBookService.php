@@ -119,6 +119,8 @@ class AuthorBookService
                 $this->bookCategoryRepository->findBookCategoriesByIds($request->getCategories())
             ))
             ->setFormats(new ArrayCollection($formats));
+
+        $this->em->flush();
     }
 
     public function deleteBook(int $id): void

@@ -24,6 +24,8 @@ class BookDetails
 
     private ?string $description;
 
+    private ?bool $meap;
+
     private ?int $publicationDate;
 
     /**
@@ -145,4 +147,20 @@ class BookDetails
         $this->formats = $formats;
         return $this;
     }
+
+    /**
+     * @return bool|null
+     */
+    public function getMeap(): ?bool
+    {
+        return $this->meap;
+    }
+
+    public function setMeap(?bool $meap): self
+    {
+        $this->meap = $meap;
+        return $this;
+    }
+
+
 }
