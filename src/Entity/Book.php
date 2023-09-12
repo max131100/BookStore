@@ -56,11 +56,15 @@ class Book
     #[ORM\OneToMany(mappedBy: 'book', targetEntity: Review::class)]
     private Collection $reviews;
 
+    #[ORM\OneToMany(mappedBy: 'book', targetEntity: BookChapter::class)]
+    private Collection $bookChapters;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->formats = new ArrayCollection();
         $this->reviews = new ArrayCollection();
+        $this->bookChapters = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -238,6 +242,36 @@ class Book
     public function setUser(UserInterface $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BookChapter>
+     */
+    public function getBookChapters(): Collection
+    {
+        return $this->bookChapters;
+    }
+
+    public function addBookChapter(BookChapter $bookChapter): static
+    {
+        if (!$this->bookChapters->contains($bookChapter)) {
+            $this->bookChapters->add($bookChapter);
+            $bookChapter->setBook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBookChapter(BookChapter $bookChapter): static
+    {
+        if ($this->bookChapters->removeElement($bookChapter)) {
+            // set the owning side to null (unless already changed)
+            if ($bookChapter->getBook() === $this) {
+                $bookChapter->setBook(null);
+            }
+        }
 
         return $this;
     }
