@@ -2,8 +2,6 @@
 
 namespace App\Model;
 
-use App\Entity\BookCategory;
-use App\Entity\BookFormat;
 
 class BookDetails
 {
@@ -31,6 +29,11 @@ class BookDetails
 
     /** @var BookFormat[]  */
     private array $formats;
+
+    /**
+     * @var BookChapter[]
+     */
+    private array $chapters;
 
     public function getId(): int
     {
@@ -160,6 +163,17 @@ class BookDetails
     {
         $this->formats = $formats;
 
+        return $this;
+    }
+
+    public function getChapters(): array
+    {
+        return $this->chapters;
+    }
+
+    public function setChapters(array $chapters): self
+    {
+        $this->chapters = $chapters;
         return $this;
     }
 }

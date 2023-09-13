@@ -3,41 +3,72 @@
 namespace App\DataFixtures;
 
 use App\Entity\Book;
-use DateTime;
-use DateTimeImmutable;
+use App\Entity\BookCategory;
+use App\Entity\BookFormat;
+use App\Entity\BookToBookFormat;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class BookFixtures extends Fixture implements DependentFixtureInterface
 {
-
-    public function load(ObjectManager $manager)
+    public function __construct(private SluggerInterface $slugger)
     {
-        $androidCategory = $this->getReference(BookCategoryFixtures::ANDROID_CATEGORY);
-        $devicesCategory = $this->getReference(BookCategoryFixtures::DEVICES_CATEGORY);
+    }
 
-        $book = (new Book())
-            ->setTitle('RxJava for Android Developers')
-            ->setSlug('rx-java-for-android-developers')
-            ->setMeap(false)
-            ->setIsbn('123321')
-            ->setDescription('Test description')
-            ->setPublicationDate(new DateTimeImmutable('2019-04-01'))
-            ->setAuthors(['Timo Tuominen'])
-            ->setCategories(new ArrayCollection([$androidCategory, $devicesCategory]))
-            ->setImage('https://images.manning.com/360/480/resize/book/b/b…239-4bf5-bbf2-886be8936951/Tuominen-RxJava-HI.png')
-            ->setUser();
+    public function load(ObjectManager $manager): void
+    {
+        $faker = Factory::create();
+        $formats = $manager->getRepository(BookFormat::class)->findAll();
+        $categories = $manager->getRepository(BookCategory::class)->findAll();
+        $users = $manager->getRepository(User::class)->findAll();
 
-        $manager->persist($book);
-        $manager->flush();
+        for ($i = 0; $i < 1000; $i++) {
+            $title = $faker->unique()->sentence();
+            $randomCategories = $faker->randomElements($categories, rand(1, 3));
+            $randomUser = $faker->randomElement($users);
+
+            $book = (new Book())
+                ->setTitle($title)
+                ->setSlug($this->slugger->slug($title))
+                ->setDescription($faker->paragraph())
+                ->setIsbn($faker->isbn13())
+                ->setAuthors([$faker->name(), $faker->name()])
+                ->setMeap(false)
+                ->setPublicationDate($faker->dateTimeBetween('-5 years', 'now'))
+                ->setImage($faker->imageUrl())
+                ->setCategories(new ArrayCollection($randomCategories))
+                ->setUser($randomUser);
+
+            $bookToBookFormats = array_map(function (BookFormat $format) use ($book, $manager): BookToBookFormat {
+                $bookToBookFormat = (new BookToBookFormat())
+                    ->setBook($book)
+                    ->setFormat($format)
+                    ->setPrice((float)(rand(10, 50)))
+                    ->setDiscountPercent(rand(5, 10));
+
+                $manager->persist($bookToBookFormat);
+
+                return $bookToBookFormat;
+            }, $formats);
+
+            $book->setFormats(new ArrayCollection($bookToBookFormats));
+
+            $manager->persist($book);
+            $manager->flush();
+        }
     }
 
     public function getDependencies(): array
     {
         return [
-            BookCategoryFixtures::class
+            BookCategoryFixtures::class,
+            BookFormatFixtures::class,
+            UserFixtures::class,
         ];
     }
 }

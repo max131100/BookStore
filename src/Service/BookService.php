@@ -17,7 +17,8 @@ class BookService
     public function __construct(
         private BookRepository           $bookRepository,
         private BookCategoryRepository   $bookCategoryRepository,
-        private RatingService            $ratingService)
+        private RatingService            $ratingService,
+        private BookChapterService $bookChapterService)
     {
     }
 
@@ -41,6 +42,7 @@ class BookService
             ->setRating($rating->getRating())
             ->setReviews($rating->getTotal())
             ->setFormats(BookMapper::mapFormats($book))
-            ->setCategories(BookMapper::mapCategories($book));
+            ->setCategories(BookMapper::mapCategories($book))
+            ->setChapters($this->bookChapterService->getChaptersTree($book)->getItems());
     }
 }

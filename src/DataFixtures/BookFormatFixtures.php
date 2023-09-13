@@ -14,7 +14,7 @@ use Doctrine\Persistence\ObjectManager;
 class BookFormatFixtures extends Fixture implements DependentFixtureInterface
 {
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $format1 = (new BookFormat())
             ->setTitle('eBook')

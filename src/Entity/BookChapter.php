@@ -101,7 +101,7 @@ class BookChapter
         return $this->parent;
     }
 
-    public function setParent(BookChapter $parent): self
+    public function setParent(?BookChapter $parent): self
     {
         $this->parent = $parent;
         return $this;
